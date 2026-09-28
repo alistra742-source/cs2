@@ -16,6 +16,7 @@ from captcha_solver import (
     extract_hcaptcha_sitekey,
     extract_rqdata_from_body,
     read_hcaptcha_token,
+    solve_accessibility_with_deepseek,
 )
 from duckmail import TempMail
 from vision_solver import OllamaVisionClient
@@ -1734,6 +1735,9 @@ class DiscordAutomation:
         # context-level proxy is ignored by the engine) and Discord's
         # Cloudflare blocks the datacenter IP with a browser error page.
         launch_proxy = self._launch_proxy()
+        _pm = (os.environ.get("PROXY_MODE") or "").strip().lower()
+        if _pm in ("off", "none", "direct", "0", "false"):
+            self._direct = True
         if launch_proxy is None and not self._direct and _tor_check():
             launch_proxy = {"server": "socks5://127.0.0.1:9050"}
             self._tor_enabled = True
@@ -4217,6 +4221,23 @@ class DiscordAutomation:
                                   level="warn")
                         await asyncio.sleep(2)
                         continue
+                    # Prefer accessibility + DeepSeek (local PC path)
+                    try:
+                        acc_ok = await solve_accessibility_with_deepseek(
+                            self._page, frame, log=self._log,
+                            deepseek_page=getattr(self, "_deepseek_page", None))
+                        if acc_ok or await read_hcaptcha_token(self._page):
+                            self._log("[Captcha] [OK] Accessibility + DeepSeek")
+                            await self._click_form_submit()
+                            for _ in range(10):
+                                await asyncio.sleep(0.8)
+                                if await self._past_captcha():
+                                    return True
+                            if await read_hcaptcha_token(self._page):
+                                return True
+                    except Exception as _acc_e:
+                        self._log(f"[Captcha] Accessibility path error: {_acc_e}",
+                                  level="warn")
                     family = hct.classify(self._challenge_payload, dom, prompt)
                     # Live tower wording is a Move-badge drag even when
                     # /getcaptcha labelled the round image_label_area_select.

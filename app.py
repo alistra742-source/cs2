@@ -38,12 +38,21 @@ PROXY_FORCE = (
 # Fall back to TOR (socks5://127.0.0.1:9050) when the proxy pool is
 # exhausted or every session is dead (e.g. vaultproxies at 0.00 GB quota).
 # Disable with TOR_FALLBACK=0.
-TOR_FALLBACK = (os.environ.get("TOR_FALLBACK") or "").strip().lower() not in ("0", "false", "no", "off")
+# Local PC + VPN: set PROXY_MODE=off and TOR_FALLBACK=0 (defaults respect PROXY_MODE).
+_pm = (os.environ.get("PROXY_MODE") or "").strip().lower()
+_tor_env = (os.environ.get("TOR_FALLBACK") or "").strip().lower()
+if _tor_env:
+    TOR_FALLBACK = _tor_env not in ("0", "false", "no", "off")
+else:
+    TOR_FALLBACK = _pm not in ("off", "none", "direct", "0", "false")
 
 from server import DiscordAutomation, _tor_check, ENGINE
 import live_control
 import live_ui
-import trainer
+try:
+    import trainer
+except ImportError:
+    trainer = None
 
 # ── Global state (Flask thread + asyncio thread) ──
 
