@@ -2,6 +2,27 @@ import asyncio
 import base64
 import json
 import os
+from pathlib import Path
+
+def _load_dotenv(path: str = ".env") -> None:
+    """Minimal .env loader (no dependency). Does not override existing env."""
+    try:
+        p = Path(path)
+        if not p.is_file():
+            return
+        for line in p.read_text(encoding="utf-8").splitlines():
+            line = line.strip()
+            if not line or line.startswith("#") or "=" not in line:
+                continue
+            k, _, v = line.partition("=")
+            k, v = k.strip(), v.strip().strip('"').strip("'")
+            if k and k not in os.environ:
+                os.environ[k] = v
+    except Exception:
+        pass
+
+_load_dotenv()
+
 import random
 import re
 import threading
