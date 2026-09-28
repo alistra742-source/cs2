@@ -24,14 +24,15 @@ set TOR_FALLBACK=0
 set HEADLESS=0
 set PORT=8080
 
-# Optional: DeepSeek API (preferred over driving the chat UI)
-set DEEPSEEK_API_KEY=sk-...
-set DEEPSEEK_MODEL=deepseek-chat
+# DeepSeek USER token (from chat.deepseek.com — NOT platform API key)
+set DEEPSEEK_USER_TOKEN=paste_token_here
 ```
 
-Without `DEEPSEEK_API_KEY`, log into https://chat.deepseek.com in the same
-browser session (or a second page the bot can reach) — the bridge will drive
-the chat UI.
+Get token:
+1. Log in https://chat.deepseek.com
+2. F12 → Application → Local Storage → userToken → copy the `value` string
+   OR Network → any /api/v0/ request → authorization header (Bearer ...)
+
 
 ## 4. Start
 ```bash
