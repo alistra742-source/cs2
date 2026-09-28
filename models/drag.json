@@ -1,0 +1,14 @@
+{
+  "kind": "drag",
+  "classes": [
+    "piece",
+    "slot"
+  ],
+  "size": 96,
+  "width": 24,
+  "metrics": {
+    "val_hit_from": 1.0,
+    "val_hit_to": 1.0,
+    "val_hit_both": 1.0
+  }
+}

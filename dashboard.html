@@ -1,0 +1,333 @@
+<!-- WARNING: this file is NOT served. The live dashboard is the DASHBOARD_HTML
+     string inside app.py (search for 'DASHBOARD_HTML = r'). Edit app.py, not here. -->
+<!doctype html><html lang="en"><head>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0a0a0b">
+<meta charset="utf-8">
+<title>EY3 - Token Forge</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html{background:#0a0a0b}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+  background:radial-gradient(900px 400px at 85% -10%,rgba(255,255,255,.045),transparent 60%),
+    radial-gradient(700px 380px at -10% 0%,rgba(255,255,255,.03),transparent 55%),#0a0a0b;
+  color:#e7e7ea;min-height:100vh;max-width:980px;margin:0 auto;padding:16px 16px 90px}
+h1{font-family:'JetBrains Mono','Courier New',monospace;font-size:28px;font-weight:700;
+  letter-spacing:2px;display:flex;align-items:center;gap:10px}
+.sub{color:#8a8a92;font-size:12px;margin:6px 0 16px;display:flex;align-items:center;gap:8px}
+.dot{width:8px;height:8px;border-radius:50%;background:#5c5c64;display:inline-block}
+.dot.on{background:#34d399;box-shadow:0 0 12px #34d399}
+nav{display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap;border-bottom:1px solid #26262b;padding-bottom:12px}
+nav button{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;letter-spacing:1px;
+  padding:9px 18px;border-radius:10px;border:1px solid #26262b;background:#131316;
+  color:#e7e7ea;cursor:pointer;transition:.15s ease}
+nav button:hover{background:#1a1a1e;border-color:#34343a}
+nav button.act{background:#34d399;color:#0a0a0b;border-color:#34d399}
+.card{background:#131316;border:1px solid #26262b;border-radius:14px;padding:18px 20px;margin-bottom:12px}
+.card h3{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:500;
+  letter-spacing:1px;margin-bottom:10px;color:#8a8a92;text-transform:uppercase}
+.row{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:10px}
+.col{flex:1;min-width:110px}
+.stat{background:#1a1a1e;border:1px solid #26262b;border-radius:10px;padding:14px;text-align:center}
+.stat .n{font-size:28px;font-weight:700;font-family:'JetBrains Mono','Courier New',monospace}
+.stat .l{font-size:10px;color:#8a8a92;letter-spacing:1px;margin-top:4px;text-transform:uppercase}
+button{padding:9px 22px;border-radius:10px;border:1px solid #26262b;background:#131316;
+  color:#e7e7ea;cursor:pointer;font-size:13px;font-weight:600}
+button:hover{background:#1a1a1e;border-color:#34343a}
+button.primary{background:#34d399;color:#0a0a0b;border-color:#34d399}
+button.danger{background:#f87171;color:#0a0a0b;border-color:#f87171}
+input,select{padding:9px 12px;border-radius:10px;border:1px solid #26262b;background:#1a1a1e;
+  color:#e7e7ea;width:100%;font-size:13px}
+label{font-size:11px;color:#8a8a92;display:block;margin-bottom:4px;letter-spacing:1px;
+  text-transform:uppercase}
+.log-box{background:#060608;border:1px solid #26262b;border-radius:10px;
+  font-family:'JetBrains Mono','Courier New',monospace;font-size:11px;line-height:1.55;padding:12px;
+  max-height:340px;overflow-y:auto;white-space:pre-wrap;word-break:break-all;color:#8a8a92}
+.log-box .warn{color:#fbbf24}.log-box .err{color:#f87171}.log-box .ok{color:#34d399}
+#screenshot{width:100%;border-radius:10px;border:1px solid #26262b;margin-top:8px;
+  max-height:380px;object-fit:contain;background:#1a1a1e}
+.badge{display:inline-block;font-size:10px;padding:3px 10px;border-radius:99px;
+  font-family:'JetBrains Mono','Courier New',monospace;letter-spacing:1px}
+.badge-ok{background:rgba(52,211,153,.15);color:#34d399}
+.badge-err{background:rgba(248,113,113,.15);color:#f87171}
+.flex{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.hide{display:none!important}
+.mt{margin-top:12px}.mb{margin-bottom:12px}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#1a1a1e;
+  border:1px solid #34343a;border-radius:10px;padding:12px 22px;font-size:13px;z-index:999}
+</style></head><body>
+
+<h1>EY3 <span style="font-size:11px;color:#8a8a92;border:1px solid #26262b;border-radius:99px;padding:4px 10px;font-weight:500;letter-spacing:2px">TOKEN FORGE</span></h1>
+
+<div class="sub"><span class="dot" id="statusDot"></span> <span id="statusText">loading...</span></div>
+
+<nav id="tabNav">
+<button class="act" data-tab="main" onclick="showTab('main')">Dashboard</button>
+<button data-tab="tokens" onclick="showTab('tokens')">Tokens</button>
+<button data-tab="settings" onclick="showTab('settings')">Settings</button>
+</nav>
+
+<div id="tabmain">
+<div class="row mb">
+<div class="col stat"><div class="n" id="statGenerated">0</div><div class="l">Generated</div></div>
+<div class="col stat"><div class="n" id="statValid">0</div><div class="l">Valid</div></div>
+<div class="col stat"><div class="n" id="statExpired">0</div><div class="l">Expired</div></div>
+</div>
+
+<div class="card">
+<div class="flex mb">
+<h3 style="margin:0">Proxies</h3>
+<span id="proxyStats" class="badge badge-ok">--</span>
+</div>
+<div class="row">
+<div class="col stat"><div class="n" id="proxyTotal">0</div><div class="l">Total</div></div>
+<div class="col stat"><div class="n" id="proxyValid">0</div><div class="l">Valid</div></div>
+<div class="col stat"><div class="n" id="proxyUsed">0</div><div class="l">Used</div></div>
+<div class="col stat"><div class="n" id="proxyInvalid">0</div><div class="l">Invalid</div></div>
+</div>
+</div>
+
+<div class="card">
+<h3>Control</h3>
+<div class="flex">
+<button class="primary" id="btnStart" onclick="startBot()">START</button>
+<button class="danger" id="btnStop" onclick="stopBot()">STOP</button>
+<button onclick="refreshProxies()">Refresh Proxies</button>
+</div>
+</div>
+
+<div class="card">
+<div class="flex" style="justify-content:space-between;align-items:center">
+  <h3 style="margin:0">Live View</h3>
+  <div class="flex">
+    <button onclick="openLive()">FULL SCREEN</button>
+    <button onclick="refreshScreenshot()">REFRESH</button>
+  </div>
+</div>
+<img id="screenshot" src="" alt="No screenshot yet" onclick="openLive()" style="cursor:pointer" title="Click to view full screen">
+</div>
+
+<div class="card">
+<h3>Logs</h3>
+<div class="log-box" id="logBox">Waiting for logs...</div>
+<div class="flex mt">
+<button onclick="viewAllLogs()">ALL LOGS</button>
+<button onclick="copyLogs()">COPY LOGS</button>
+</div>
+</div>
+</div>
+
+<div id="tabtokens" class="hide">
+<div class="card">
+<h3>Tokens</h3>
+<div class="flex mb"><button onclick="refreshTokens()">Refresh</button></div>
+<div id="tokenList"><p style="color:#8a8a92">No tokens yet.</p></div>
+</div>
+</div>
+
+<div id="tabsettings" class="hide">
+<div class="card">
+<h3>Settings</h3>
+<label>Headless</label>
+<div class="flex mb">
+<button id="hlOn" onclick="setHeadless(true)">ON</button>
+<button id="hlOff" onclick="setHeadless(false)">OFF</button>
+</div>
+<label>Workers</label>
+<select id="workerCount" onchange="saveConfig()">
+<option value="1">1</option>
+<option value="2">2</option>
+<option value="3">3</option>
+<option value="4">4</option>
+</select>
+</div>
+</div>
+
+<script>
+function $(id){return document.getElementById(id)}
+function api(path,opts){
+  opts=opts||{};
+  var f=Object.assign({method:'POST',headers:{'Content-Type':'application/json'}},opts);
+  if(opts.body)f.body=JSON.stringify(opts.body);
+  return fetch(path,f);
+}
+function toast(m){
+  var t=document.createElement('div');
+  t.className='toast';
+  t.textContent=m;
+  document.body.appendChild(t);
+  setTimeout(function(){if(t.parentNode)t.parentNode.removeChild(t)},3000);
+}
+function showTab(name){
+  var ids=['main','tokens','settings'];
+  ids.forEach(function(t){
+    var el=$('tab'+t);
+    if(el)el.classList.toggle('hide',t!==name);
+  });
+  document.querySelectorAll('#tabNav button').forEach(function(b){
+    b.classList.toggle('act',b.getAttribute('data-tab')===name);
+  });
+}
+window.showTab=showTab;
+
+function startBot(){
+  api('/start').then(function(r){return r.json()}).then(function(d){
+    toast(d.message||'Started');
+  }).catch(function(e){toast('Error: '+e.message)});
+}
+function stopBot(){
+  api('/stop').then(function(r){return r.text()}).then(function(t){
+    toast(t||'Stopped');
+  }).catch(function(e){toast('Error: '+e.message)});
+}
+window.startBot=startBot;
+window.stopBot=stopBot;
+
+function setHeadless(on){
+  api('/config',{body:{headless:on}}).then(function(){
+    $('hlOn').classList.toggle('primary',on);
+    $('hlOff').classList.toggle('primary',!on);
+    toast('Saved');
+  }).catch(function(e){toast('Error: '+e.message)});
+}
+window.setHeadless=setHeadless;
+
+function saveConfig(){
+  api('/config',{
+    body:{
+      headless:true,
+      workerCount:parseInt($('workerCount').value,10)
+    }
+  }).then(function(){toast('Saved')}).catch(function(e){toast('Error: '+e.message)});
+}
+window.saveConfig=saveConfig;
+
+function refreshStatus(){
+  fetch('/status').then(function(r){return r.json()}).then(function(s){
+    try{
+      $('statusDot').className='dot'+(s&&s.running?' on':'');
+      $('statusText').textContent=s&&s.running?'running ('+((s.workers&&s.workers.length)||0)+' workers)':'idle';
+      $('statGenerated').textContent=(s&&s.generated)||0;
+      $('statValid').textContent=(s&&s.valid)||0;
+      $('statExpired').textContent=(s&&s.expired)||0;
+      if(s&&s.proxies){
+        $('proxyTotal').textContent=s.proxies.total||0;
+        $('proxyValid').textContent=s.proxies.valid||0;
+        $('proxyUsed').textContent=s.proxies.used||0;
+        $('proxyInvalid').textContent=s.proxies.invalid||0;
+      }
+      if(s&&s.headless!==undefined){
+        $('hlOn').classList.toggle('primary',!!s.headless);
+        $('hlOff').classList.toggle('primary',!s.headless);
+      }
+      if(s&&s.workerCount){
+        $('workerCount').value=s.workerCount;
+      }
+    }catch(e){}
+  }).catch(function(){});
+}
+window.refreshStatus=refreshStatus;
+
+function refreshLogs(){
+  fetch('/worker/B1/logs').then(function(r){return r.json()}).then(function(d){
+    try{
+      if(d&&d.logs){
+        var box=$('logBox');
+        // strip ancient lines so the UI shows only fresh activity
+        var logs=(d.all_logs||d.logs);
+        var cutoff=Date.now()/1000-300;
+        var fresh=logs.filter(function(l){return(l.timestamp||l.time||0)>=cutoff});
+        box.textContent=fresh.length?fresh.slice(-80).map(function(l){
+          return (l.time||'') + ' ' + (l.message||l.m||'');
+        }).join('\n'):'No recent activity.';
+        box.scrollTop=box.scrollHeight;
+      }
+    }catch(e){}
+  }).catch(function(){});
+}
+window.refreshLogs=refreshLogs;
+
+function refreshTokens(){
+  fetch('/tokens').then(function(r){return r.json()}).then(function(d){
+    try{
+      var list=$('tokenList');
+      if(!d||!d.length){list.innerHTML='<p style="color:#8a8a92">No tokens yet.</p>';return;}
+      var html='<table style="width:100%;border-collapse:collapse;font-size:12px">';
+      d.forEach(function(a){
+        var st=a.valid===true?'<span class="badge badge-ok">Valid</span>':'<span class="badge badge-err">Invalid</span>';
+        html+='<tr style="border-bottom:1px solid #26262b">';
+        html+='<td style="padding:6px">'+(a.email||'?')+'</td>';
+        html+='<td style="padding:6px">'+st+'</td>';
+        html+='<td style="padding:6px;font-family:monospace;font-size:10px;color:#5c5c64;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+(a.token||'').slice(0,40)+'...</td>';
+        html+='</tr>';
+      });
+      html+='</table>';
+      list.innerHTML=html;
+    }catch(e){}
+  }).catch(function(){});
+}
+window.refreshTokens=refreshTokens;
+
+function refreshProxies(){
+  api('/proxies/refresh').then(function(r){return r.json()}).then(function(d){
+    toast(d.message||d.error||'Refreshed');
+  }).catch(function(e){toast('Error: '+e.message)});
+}
+window.refreshProxies=refreshProxies;
+
+function viewAllLogs(){
+  fetch('/worker/B1/logs').then(function(r){return r.json()}).then(function(d){
+    var logs=(d&&d.all_logs||d&&d.logs||[]);
+    var text=logs.map(function(l){return(l.time||'')+' '+(l.message||l.m||'')}).join('\n');
+    var w=window.open('','_blank','width=900,height=600');
+    if(!w){alert('Popup blocked'); return;}
+    w.document.write('<html><head><title>Logs</title></head>');
+    w.document.write('<body style="background:#000;color:#0f0;font-family:monospace;font-size:11px;padding:14px;white-space:pre-wrap;word-break:break-all">');
+    w.document.write(text.replace(/[<>&]/g,function(c){return({'<':'&lt;','>':'&gt;','&':'&amp;'})[c]}));
+    w.document.write('</body></html>');
+    w.document.close();
+  }).catch(function(e){alert('Error: '+e.message);});
+}
+window.viewAllLogs=viewAllLogs;
+
+function copyLogs(){
+  fetch('/worker/B1/logs').then(function(r){return r.json()}).then(function(d){
+    var logs=(d&&d.all_logs||d&&d.logs||[]);
+    var text=logs.map(function(l){return(l.time||'')+' '+(l.message||l.m||'')}).join('\n');
+    function done(){toast('Logs copied to clipboard');}
+    function fallback(t,cb){
+      var ta=document.createElement('textarea');
+      ta.value=t; ta.style.position='fixed'; ta.style.opacity='0';
+      document.body.appendChild(ta); ta.select();
+      try{document.execCommand('copy');cb();}
+      catch(e){alert('Copy failed - use ALL LOGS instead');}
+      document.body.removeChild(ta);
+    }
+    if(navigator.clipboard&&navigator.clipboard.writeText){
+      navigator.clipboard.writeText(text).then(done).catch(function(){fallback(text,done);});
+    }else{fallback(text,done);}
+  }).catch(function(e){alert('Error: '+e.message);});
+}
+window.copyLogs=copyLogs;
+
+function refreshScreenshot(){
+  var img=$('screenshot');
+  if(!img) return;
+  var src='/latest?worker=B1&t='+Date.now();
+  var tmp=new Image();
+  tmp.onload=function(){ img.src=src; };
+  tmp.src=src;
+}
+window.refreshScreenshot=refreshScreenshot;
+
+// Init
+refreshStatus();
+refreshLogs();
+refreshTokens();
+refreshScreenshot();
+setInterval(refreshStatus,5000);
+setInterval(refreshLogs,2200);
+setInterval(refreshTokens,12000);
+setInterval(refreshScreenshot,2500);
+</script>
+</body></html>

@@ -1,0 +1,23 @@
+# VCS / local junk — never send to the builder
+.git
+.gitignore
+__pycache__
+*.pyc
+*.pyo
+*.egg-info
+
+# Local config / secrets
+.env
+.env.local
+.env.*.local
+
+# Logs / OS junk
+*.log
+.DS_Store
+
+# Notebooks / dev-only test files (not needed in the runtime image)
+notebooks/
+*.ipynb
+dbg_*.py
+test_ai*.py
+fresh_quiz*.py

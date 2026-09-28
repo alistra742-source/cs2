@@ -1,0 +1,23 @@
+## TOR config for IP rotation
+## SOCKS5 proxy on port 9050 (for Playwright)
+## Control port on 9051 (for newnym signal)
+
+SOCKSPort 0.0.0.0:9050
+ControlPort 9051
+CookieAuthentication 0
+DataDirectory /tmp/tor_data
+Log notice stdout
+
+## Don't be a relay
+ORPort 0
+ExitRelay 0
+BridgeRelay 0
+
+## Performance tuning — sticky exit IP per session
+## A signup takes ~1-2 min; a circuit that rotates mid-session (old 60s)
+## changes the exit IP mid-registration, which Discord flags. Keep one
+## circuit for the whole session; the bot signals NEWNYM between attempts
+## to force a fresh exit node per account.
+NumCPUs 1
+MaxCircuitDirtiness 900 seconds
+NewCircuitPeriod 60 seconds

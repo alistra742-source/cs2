@@ -1,0 +1,25 @@
+# HTTP / scraping
+requests>=2.31.0
+aiohttp>=3.9.0
+beautifulsoup4>=4.12.0
+lxml>=5.0.0
+
+# Browser engine: nodriver — an undetected, CDP-native driver for a REAL
+# Google Chrome (google-chrome-stable, installed in the Dockerfile). No
+# Selenium/WebDriver layer, no Firefox. The fingerprint is a real user's
+# Chrome; nodriver only strips the automation tells.
+nodriver==0.50.3
+
+# Web app (dashboard)
+flask>=3.0.0
+
+# Email checker (MX record lookups; optional - falls back to plain DNS)
+dnspython>=2.6.0
+
+# Offline captcha solver models (optional; server falls back to the vision
+# model when these are absent). Training/tools: make_dataset.py,
+# make_challenges.py, train_models.py, tile_classifier.py.
+Pillow>=10.0.0
+numpy>=1.26.0
+# torch (CPU build is plenty): pip install torch --index-url \
+#     https://download.pytorch.org/whl/cpu
